@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+      <title>HTML Login Form</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+      <link rel="shortcut icon" href="{{url_for('static', filename = 'password.png' )}}">
+</head>
+
+<body>
+      <div class="main">
+            <h1>Python WebApp Login</h1>
+            <h3>Enter your login credentials</h3>
+            <!-- Display Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+
+
+            <form action="{{ url_for('login') }}" method="POST">
+                  <label for="first">
+                        Username:
+                  </label>
+                  <input type="text"
+                         id="username"
+                         name="username"
+                         placeholder="Enter your Username" required>
+
+                  <label for="password">
+                        Password:
+                  </label>
+                  <input type="password"
+                         id="password"
+                         name="password"
+                         placeholder="Enter your Password" required>
+
+                  <div class="wrap">
+                        <button type="submit"
+                                onclick="solve()">
+                              Login
+                        </button>
+                  </div>
+            </form>
+                  <a href="{{ url_for('reset_password') }}">Forgot your password?</a>
+                  </a>
+            </p>
+      </div>
+</body>
+
+
+
+</html>
