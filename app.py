@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
 import datetime
 import os
+import math
 
 app = Flask(__name__)
 app.secret_key = 'flash message'  # Secret key for session management and flash messages
@@ -35,15 +36,29 @@ def index():
 # Route for the home page, accessible after login
 @app.route('/home')
 def home():
-    if 'user_id' in session:  # Check if user is logged in
+    if 'user_id' in session:
+        # Pagination parameters
+        page = request.args.get('page', 1, type=int)  # Get current page, default is 1
+        per_page = 10  # Number of records per page
+        offset = (page - 1) * per_page
+
+        # Get the total number of students
         cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM students_info')  # Fetch student data
+        cur.execute('SELECT COUNT(*) FROM students_info')
+        total_records = cur.fetchone()[0]
+
+        # Get the current page's records
+        cur.execute('SELECT * FROM students_info LIMIT %s OFFSET %s', (per_page, offset))
         data = cur.fetchall()
         cur.close()
-        return render_template('home.html', students_info=data)  # Render home page with student data
+
+        # Calculate total pages
+        total_pages = math.ceil(total_records / per_page)
+
+        return render_template('home.html', student_info=data, page=page, total_pages=total_pages)
     else:
-        flash('You must login to access this page.', 'error')
-        return redirect(url_for('login'))  # Redirect to login if not logged in
+        flash('Please Login to access this Page', 'error')
+        return redirect(url_for('login'))
 
 # Route to handle data insertion
 @app.route('/insert', methods=['POST'])
